@@ -1,37 +1,38 @@
-# Compiled source #
-###################
-*.com
-*.class
-*.dll
-*.exe
-*.o
-*.so
+from moviepy.editor import *
+from moviepy.video.tools.drawing import color_gradient
 
-# Packages #
-############
-# it's better to unpack these files and commit the raw source
-# git has its own built in compression methods
-*.7z
-*.dmg
-*.gz
-*.iso
-*.jar
-*.rar
-*.tar
-*.zip
+def generate_text_clip(text, duration, fontsize=40, color='white', bg_color='black'):
+    """Creates a text clip with a background"""
+    txt_clip = TextClip(text, fontsize=fontsize, color=color, size=(1280, 720), bg_color=bg_color)
+    return txt_clip.set_duration(duration).set_position('center')
 
-# Logs and databases #
-######################
-*.log
-*.sql
-*.sqlite
+def main():
+    # Create text scenes
+    scenes = [
+        ("被囚禁在蛇岐八家中的上杉绘梨衣与路明非相遇", 4),
+        ("两人相处中暗生情愫，一起度过美好的时光", 4),
+        ("但因势力纷争，绘梨衣为保护路明非而身陷险境", 4),
+        ("最终倒在血泊之中，至死不知小樱花真名", 4),
+        ("那未完成的行程，成了路明非心中永远的意难平", 4),
+    ]
 
-# OS generated files #
-######################
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
+    clips = []
+    for text, duration in scenes:
+        clips.append(generate_text_clip(text, duration))
+
+    # Combine all text clips into one video
+    final_clip = concatenate_videoclips(clips, method="compose")
+
+    # Add background music (optional)
+    # Replace 'background_music.mp3' with your audio file
+    try:
+        audio = AudioFileClip("background_music.mp3").set_duration(final_clip.duration)
+        final_clip = final_clip.set_audio(audio)
+    except FileNotFoundError:
+        print("背景音乐文件未找到，跳过添加音乐。")
+
+    # Export video
+    final_clip.write_videofile("anime_video.mp4", fps=24)
+
+if __name__ == "__main__":
+    main()
